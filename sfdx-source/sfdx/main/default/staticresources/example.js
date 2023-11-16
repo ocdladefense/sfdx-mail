@@ -1,0 +1,1 @@
+// An example JavaScript file as an SFDX static resource.

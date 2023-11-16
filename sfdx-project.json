@@ -1,0 +1,33 @@
+{
+  "name": "ExampleSfdxRepository",
+  "namespace": "",
+  "packageDirectories": [
+    {
+      "path": "sfdx-source/Modules/default",
+      "package": "DefaultModule",
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
+      "default": false,
+      "versionDescription": "Created as part of the GitHub template for sfdx repositories.",
+      "dependencies": [
+        {
+            "package": "Json"
+        },
+        {
+            "package": "Http"
+        }
+      ]
+    },
+    {
+        "path": "sfdx-source/unpackaged",
+        "default": false
+    },
+    {
+        "path": "sfdx-source/sfdx",
+        "default": true
+    }
+  ],
+  "sfdcLoginUrl": "https://test.salesforce.com",
+  "sourceApiVersion": "58.0",
+  "packageAliases": {}
+}
