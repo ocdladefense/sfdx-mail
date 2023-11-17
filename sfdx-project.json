@@ -3,8 +3,8 @@
   "namespace": "",
   "packageDirectories": [
     {
-      "path": "sfdx-source/Modules/default",
-      "package": "DefaultModule",
+      "path": "sfdx-source/Modules/mail",
+      "package": "Mail",
       "versionName": "ver 0.1",
       "versionNumber": "0.1.0.NEXT",
       "default": false,
