@@ -13,7 +13,11 @@ public class MailClient {
  
   
     public MailClient() {
-        this.config = new MailClientSettings();
+        this.config = new DefaultMailClientSettings();
+    }
+
+    public MailClient(MailClientSettings config) {
+        this.config = config;
     }
 
     

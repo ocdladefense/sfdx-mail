@@ -43,7 +43,7 @@ public class MailMessageFormatterTest {
         
         MailClientTest test = new MailClientTest();
         
-        MailClientSettings config = new MailClientSettings();
+        DefaultMailClientSettings config = new DefaultMailClientSettings();
         
         String letterhead = (String)config.get('letterhead');
         

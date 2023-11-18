@@ -29,11 +29,11 @@ public class MailMessageTemplate {
      */
     public static MailMessageTemplate fromSObject(String name) {
         
-        OcdlaEmailTemplate__c emailTemplate = [SELECT Id, OcdlaSubject__c, OcdlaHtmlBody__c  FROM OcdlaEmailTemplate__c
+        MailTemplate__c tpl = [SELECT Id, Subject__c, HtmlBody__c  FROM MailTemplate__c
             WHERE Name = :name LIMIT 1];
         
-        String subject = emailTemplate.OcdlaSubject__c;
-        String body = emailTemplate.OcdlaHtmlBody__c;
+        String subject = tpl.Subject__c;
+        String body = tpl.HtmlBody__c;
         
         return new MailMessageTemplate(subject,body);
     }

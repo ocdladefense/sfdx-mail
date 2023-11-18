@@ -1,19 +1,20 @@
-public virtual class MailClientSettings {
+public abstract class MailClientSettings {
 
     
-    private Map<String,Object> config = new Map<String,Object>();
+    protected Map<String,Object> config = new Map<String,Object>();
     
 
     
     
     public MailClientSettings(Map<String,Object> config) {
-		this.config = config;   
+		  this.config = config;   
     }
     
     public MailClientSettings() {
+        /*
         this.config = new Map<String,Object>();
         String letterhead;
-        OrgWideEmailAddress owa = [SELECT Id, Address, DisplayName FROM OrgWideEmailAddress WHERE DisplayName = 'OCDLA' LIMIT 1];
+        List<OrgWideEmailAddress> owa = [SELECT Id, Address, DisplayName FROM OrgWideEmailAddress WHERE DisplayName = 'OCDLA' LIMIT 1];
         this.config.put('leaderheadName','OcdlaEmailLetterhead');
         this.config.put('orgWideEmailAddressId',owa.Id);
         this.config.put('senderDisplayName','OCDLA');
@@ -22,10 +23,13 @@ public virtual class MailClientSettings {
         this.config.put('allOrNothing',True);
         
         letterhead = [SELECT ClickpdxCore__Value__c  FROM ClickpdxCore__CoreConfig__mdt  WHERE DeveloperName = 'OcdlaEmailLetterhead' LIMIT 1].ClickpdxCore__Value__c;
-		this.config.put('letterhead',letterhead);
+		    this.config.put('letterhead',letterhead);
+        */
     }
     
     public Object get(String key) {
         return this.config.get(key);
     }
+
+    public abstract String getLetterhead();
 }
