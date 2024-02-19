@@ -1,6 +1,7 @@
 public class DefaultMailClientSettings extends MailClientSettings {
 
 
+
     public DefaultMailClientSettings() {
 
         this.config = new Map<String,Object>();
@@ -12,6 +13,7 @@ public class DefaultMailClientSettings extends MailClientSettings {
         this.config.put('allOrNothing',True);
         this.config.put('letterhead','OcdlaEmailLetterhead');
     }
+
 
     public override String getLetterhead() {
         return 'OcdlaEmailLetterhead';

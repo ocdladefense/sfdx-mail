@@ -41,7 +41,7 @@ public class MailMessageFormatterTest {
         
         MailMessageFormatterTest tester = new MailMessageFormatterTest();
         
-        MailClientTest test = new MailClientTest();
+        // MailClientTest test = new MailClientTest();
         
         DefaultMailClientSettings config = new DefaultMailClientSettings();
         

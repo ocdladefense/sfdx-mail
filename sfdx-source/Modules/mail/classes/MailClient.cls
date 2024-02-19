@@ -117,13 +117,7 @@ public class MailClient {
         
         System.debug('SingleEmailMessage[] size is: ' +out.size());
             
-		Messaging.SendEmailResult[] results = send(out);
-        System.debug('Salesforce size is: '+results[0]);
-        if(null == results || results.size() < 1) {
-            throw new MailClientException('Empty!');
-        }
-        
-        return MailSendStatus.fromSendEmailResults(out,results);
+		return send(out);
     }
 
     
@@ -144,37 +138,29 @@ public class MailClient {
         
         System.debug('SingleEmailMessage[] size is: ' +out.size());
             
-		Messaging.SendEmailResult[] results = send(out);
-        System.debug('Salesforce size is: '+results[0]);
-        if(null == results || results.size() < 1) {
-            throw new MailClientException('Empty!');
-        }
-        
-        return MailSendStatus.fromSendEmailResults(out,results);
+		return send(out);
     }
 
     
     
     public Messaging.SingleEmailMessage toSingleEmailMessage(MailMessage msg) {
         
-        String senderDisplayName = (String)config.get('senderDisplayName');
-        String senderDomain = (String)config.get('senderDomain');
-        String ccAddress = (String)config.get('ccAddress');
-        Id orgWideEmailAddressId = (Id)config.get('orgWideEmailAddressId');
-        
+        Id orgWideEmailAddressId = config.getOrgWideEmailAddressId();
+        String references = config.getReferences();
+        String inReplyTo = config.getInReplyTo();
+        String replyToAddress = config.getReplyToAddress();
+        List<String> ccAddresses = config.getCcAddresses();
     
         Messaging.SingleEmailMessage sforce = msg.toSingleEmailMessage();
 
 
-        // sforce.setSenderDisplayName();
-        // Necessary because in this implementation the merge has already happened.
+        // False because in this implementation the merge has already happened.
         sforce.setTreatBodiesAsTemplate(False);
         sforce.saveAsActivity = False;
-        String rand = '<'+ Math.random() + '@' + senderDomain + '>';
-        sforce.setReferences(rand);
-        sforce.setInReplyTo(rand);
-        sforce.setReplyTo('info@ocdla.org');
-        sforce.setCcAddresses(new List<String>{ccAddress});
+        sforce.setReferences(references);
+        sforce.setInReplyTo(inReplyTo);
+        sforce.setReplyTo(replyToAddress);
+        sforce.setCcAddresses(ccAddresses);
         // sforce.setSenderDisplayName('OCDLA Orders');
         sforce.setOrgWideEmailAddressId(orgWideEmailAddressId);
         
@@ -191,8 +177,22 @@ public class MailClient {
         return sforce;
     }
     
-    public Messaging.SendEmailResult[] send(List<Messaging.SingleEmailMessage> theMessages){
-        return Messaging.sendEmail(theMessages, (Boolean)config.get('allOrNothing'));
+
+
+
+
+
+    public List<MailSendStatus> send(List<Messaging.SingleEmailMessage> messages){
+
+        Messaging.SendEmailResult[] results = Messaging.sendEmail(messages, config.getAllOrNothing());
+
+        System.debug('Salesforce size is: '+results[0]);
+        if(null == results || results.size() < 1) {
+            throw new MailClientException('Empty!');
+        }
+
+
+        return MailSendStatus.fromSendEmailResults(messages,results);
     }
  
 		
@@ -206,13 +206,14 @@ public class MailClient {
      *   https://tools.ietf.org/html/rfc2822#section-3.6.4
      * 
      */
-    public Messaging.SingleEmailMessage toSingleEmailMessage(String to, String subject, String body, Id whoId){
+    /*public Messaging.SingleEmailMessage toSingleEmailMessage(String to, String subject, String body, Id whoId){
         return toSingleEmailMessage(to,subject,body,whoId,null);
     }
+    */
     
    
-    
-    public Messaging.SingleEmailMessage toSingleEmailMessage(String to, String subject, String body, Id whoId, Id whatId){
+    /*
+    public Messaging.SingleEmailMessage toSingleEmailMessage(String to, String subject, String body, Id whoId, Id whatId) {
         Messaging.SingleEmailMessage msg = new Messaging.SingleEmailMessage();
 
         String senderDisplayName = (String)config.get('senderDisplayName');
@@ -235,6 +236,7 @@ public class MailClient {
         
         return msg;
     }
+    */
     
 
     

@@ -29,14 +29,14 @@ public class MailClientTest {
             
         MailMessage msg = client.compose('jbernal.web.dev@gmail.com');
         msg.setSubject('TEST EMAIL');
-        msg.setBody('Hello World!');
+        msg.setBody('Hello, {!Contact.FirstName}!');
 
         client.addMessages(new List<MailMessage>{msg});
         
         MailSendStatus[] statuses = client.send(msg);
         
 
-        Messaging.SingleEmailMessage forceMsg = client.toSingleEmailMessage('jbernal.web.dev@gmail.com', 'TEST EMAIL', '{!c.FirstName}', c.Id, null);
+        // Messaging.SingleEmailMessage forceMsg = client.toSingleEmailMessage('jbernal.web.dev@gmail.com', 'TEST EMAIL', '{!Contact.FirstName}', c.Id, null);
     }
     
     

@@ -4,30 +4,34 @@
   "packageDirectories": [
     {
       "path": "sfdx-source/Modules/mail",
-      "package": "Mail",
+      "package": "LibMail",
       "versionName": "ver 0.1",
       "versionNumber": "0.1.0.NEXT",
       "default": false,
-      "versionDescription": "Created as part of the GitHub template for sfdx repositories.",
-      "dependencies": [
-        {
-            "package": "Json"
-        },
-        {
-            "package": "Http"
-        }
-      ]
+      "versionDescription": "Spring '24",
+      "dependencies": []
     },
     {
-        "path": "sfdx-source/unpackaged",
-        "default": false
+      "path": "sfdx-source/Modules/ocdla-mail",
+      "package": "OcdlaMail",
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
+      "default": false,
+      "versionDescription": "Spring '24",
+      "dependencies": []
     },
     {
-        "path": "sfdx-source/sfdx",
-        "default": true
+      "path": "sfdx-source/unpackaged",
+      "default": false
+    },
+    {
+      "path": "sfdx-source/sfdx",
+      "default": true
     }
   ],
   "sfdcLoginUrl": "https://test.salesforce.com",
   "sourceApiVersion": "58.0",
-  "packageAliases": {}
+  "packageAliases": {
+    "Mail": "0Ho3h0000008OmECAU"
+  }
 }
