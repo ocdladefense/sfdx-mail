@@ -6,7 +6,9 @@ public abstract class MailGenerator implements Iterable<MailMessage> {
     
 	protected String tplName = null;
 
-  
+    
+    
+
     
     public virtual void setTemplate(String name) {
         this.tplName = name;

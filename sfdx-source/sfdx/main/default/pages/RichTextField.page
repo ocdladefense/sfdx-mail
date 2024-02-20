@@ -1,0 +1,36 @@
+<apex:page standardController="OcdlaEmailTemplate__c"> 
+    
+            <script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/super-build/ckeditor.js"></script>
+            <!--
+                Uncomment to load the Spanish translation
+                <script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/super-build/translations/es.js"></script>
+            -->
+
+            <apex:includeScript value="{!$Resource.CKEditorInit}" />
+    
+    
+    <h2>
+        Here is my custom visualforce page.
+    </h2>
+    <apex:pageBlock title="My Content" mode="edit">
+                    <apex:form id="foobar">
+                    <apex:inputTextArea id="editor" value="{!OcdlaEmailTemplate__c.OcdlaHtmlBody__c}">
+                    </apex:inputTextArea>
+    </apex:form>
+    </apex:pageBlock>
+    
+    
+<!--
+The "super-build" of CKEditor&nbsp;5 served via CDN contains a large set of plugins and multiple editor types.
+See https://ckeditor.com/docs/ckeditor5/latest/installation/getting-started/quick-start.html#running-a-full-featured-editor-from-cdn
+-->
+
+            
+            <script>  
+            window.editor = null;
+            // This sample still does not showcase all CKEditor&nbsp;5 features (!)
+            // Visit https://ckeditor.com/docs/ckeditor5/latest/features/index.html to browse all the features.
+            initEditor('[id*="editor"').then( eInstance => { editor = eInstance; });
+
+            </script>
+</apex:page>

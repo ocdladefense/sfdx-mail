@@ -8,8 +8,7 @@
       "versionName": "ver 0.1",
       "versionNumber": "0.1.0.NEXT",
       "default": false,
-      "versionDescription": "Spring '24",
-      "dependencies": []
+      "versionDescription": ""
     },
     {
       "path": "sfdx-source/Modules/ocdla-mail",
@@ -32,6 +31,8 @@
   "sfdcLoginUrl": "https://test.salesforce.com",
   "sourceApiVersion": "58.0",
   "packageAliases": {
-    "Mail": "0Ho3h0000008OmECAU"
+    "LibMail": "0HoVJ00000000010AA",
+    "ClickpdxCore@1.33": "04t1I000002yBe4",
+    "LibMail@0.1.0-1": "04tVJ0000001PArYAM"
   }
 }

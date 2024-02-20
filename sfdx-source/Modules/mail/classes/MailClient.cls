@@ -13,11 +13,7 @@ public class MailClient {
  
   
     public MailClient() {
-        this.config = new DefaultMailClientSettings();
-    }
-
-    public MailClient(MailClientSettings config) {
-        this.config = config;
+        this.config = new MailClientSettings();
     }
 
     
@@ -71,7 +67,10 @@ public class MailClient {
     }
     
     
-    
+    public String useLetterhead(String content) {
+        String letterhead = (String)config.get('letterhead');
+        return null != letterhead ? letterhead.replace('{{content}}', content) : content; 
+    }
  
 
 
@@ -86,10 +85,7 @@ public class MailClient {
     }
 
     
-    public String useLetterhead(String content) {
-        String letterhead = (String)config.get('letterhead');
-        return null != letterhead ? letterhead.replace('{{content}}', content) : content; 
-    }
+
     
 
     public List<MailSendStatus> send(MailGenerator custom) {
@@ -117,7 +113,13 @@ public class MailClient {
         
         System.debug('SingleEmailMessage[] size is: ' +out.size());
             
-		return send(out);
+		Messaging.SendEmailResult[] results = send(out);
+        System.debug('Salesforce size is: '+results[0]);
+        if(null == results || results.size() < 1) {
+            throw new MailClientException('Empty!');
+        }
+        
+        return MailSendStatus.fromSendEmailResults(out,results);
     }
 
     
@@ -138,67 +140,71 @@ public class MailClient {
         
         System.debug('SingleEmailMessage[] size is: ' +out.size());
             
-		return send(out);
-    }
-
-    
-    
-    public Messaging.SingleEmailMessage toSingleEmailMessage(MailMessage msg) {
-        
-        Id orgWideEmailAddressId = config.getOrgWideEmailAddressId();
-        String references = config.getReferences();
-        String inReplyTo = config.getInReplyTo();
-        String replyToAddress = config.getReplyToAddress();
-        List<String> ccAddresses = config.getCcAddresses();
-    
-        Messaging.SingleEmailMessage sforce = msg.toSingleEmailMessage();
-
-
-        // False because in this implementation the merge has already happened.
-        sforce.setTreatBodiesAsTemplate(False);
-        sforce.saveAsActivity = False;
-        sforce.setReferences(references);
-        sforce.setInReplyTo(inReplyTo);
-        sforce.setReplyTo(replyToAddress);
-        sforce.setCcAddresses(ccAddresses);
-        // sforce.setSenderDisplayName('OCDLA Orders');
-        sforce.setOrgWideEmailAddressId(orgWideEmailAddressId);
-        
-        // For sampled records, avoid INVALID_CROSS_REFERENCE_ID exceptions.
-        if(null != msg.getWhoId() && !msg.isSampled()) {
-    		sforce.setTargetObjectId(msg.getWhoId());
-        }
-
-        // For sampled records, avoid INVALID_CROSS_REFERENCE_ID exceptions.        
-        if(null != msg.getWhatId()  && !msg.isSampled()) {
-        	sforce.setWhatId(msg.getWhatId());
-        }
-        
-        return sforce;
-    }
-    
-
-
-
-
-
-    public List<MailSendStatus> send(List<Messaging.SingleEmailMessage> messages){
-
-        Messaging.SendEmailResult[] results = Messaging.sendEmail(messages, config.getAllOrNothing());
-
+		Messaging.SendEmailResult[] results = send(out);
         System.debug('Salesforce size is: '+results[0]);
         if(null == results || results.size() < 1) {
             throw new MailClientException('Empty!');
         }
+        
+        return MailSendStatus.fromSendEmailResults(out,results);
+    }
 
+    
+    
 
-        return MailSendStatus.fromSendEmailResults(messages,results);
+    
+    public Messaging.SendEmailResult[] send(List<Messaging.SingleEmailMessage> theMessages){
+        return Messaging.sendEmail(theMessages, (Boolean)config.get('allOrNothing'));
     }
  
 		
     
 
 
+    public Messaging.SingleEmailMessage toSingleEmailMessage(MailMessage msg) {
+        
+        String senderDisplayName = (String)config.get('senderDisplayName');
+        String senderDomain = (String)config.get('senderDomain');
+        String ccAddress = (String)config.get('ccAddress');
+        Id orgWideEmailAddressId = (Id)config.get('orgWideEmailAddressId');
+        
+    
+        Messaging.SingleEmailMessage sforce = new Messaging.SingleEmailMessage();
+        sforce.setSubject(msg.getSubject());    
+        sforce.setHtmlBody(msg.getBody());
+        
+        // Set an explicit to address; see below to not set the whatId in this case.
+        if(null != msg.getTo()) {
+            sforce.setToAddresses(new List<String>{msg.getTo()});
+        }
+
+        // sforce.setSenderDisplayName();
+        // Neccessary because in this implementation the merge has already happened.
+        sforce.setTreatBodiesAsTemplate(False);
+        sforce.saveAsActivity = False;
+        String rand = '<'+ Math.random() + '@' + senderDomain + '>';
+        sforce.setReferences(rand);
+        sforce.setInReplyTo(rand);
+        sforce.setCcAddresses(new List<String>{ccAddress});
+        sforce.setSenderDisplayName(null);
+        sforce.setOrgWideEmailAddressId(orgWideEmailAddressId);
+        
+        // For sampled records, avoid INVALID_CROSS_REFERENCE_ID exceptions.
+        if(null != msg.getWhoId() && !msg.isSampled()) {
+            sforce.setTargetObjectId(msg.getWhoId());
+        }
+
+        // For sampled records, avoid INVALID_CROSS_REFERENCE_ID exceptions.        
+        if(null != msg.getWhatId() && !msg.isSampled()) {
+        	sforce.setWhatId(msg.getWhatId());
+        }
+        
+        if(msg.isTest()) {
+        	sforce.setTreatTargetObjectAsRecipient(False);
+        }
+        
+        return sforce;
+    }
     
     
     /**
@@ -206,14 +212,13 @@ public class MailClient {
      *   https://tools.ietf.org/html/rfc2822#section-3.6.4
      * 
      */
-    /*public Messaging.SingleEmailMessage toSingleEmailMessage(String to, String subject, String body, Id whoId){
+    public Messaging.SingleEmailMessage toSingleEmailMessage(String to, String subject, String body, Id whoId){
         return toSingleEmailMessage(to,subject,body,whoId,null);
     }
-    */
     
    
-    /*
-    public Messaging.SingleEmailMessage toSingleEmailMessage(String to, String subject, String body, Id whoId, Id whatId) {
+    
+    public Messaging.SingleEmailMessage toSingleEmailMessage(String to, String subject, String body, Id whoId, Id whatId){
         Messaging.SingleEmailMessage msg = new Messaging.SingleEmailMessage();
 
         String senderDisplayName = (String)config.get('senderDisplayName');
@@ -236,7 +241,6 @@ public class MailClient {
         
         return msg;
     }
-    */
     
 
     
@@ -247,6 +251,23 @@ public class MailClient {
 
         
 
+    public String serialize(MailMessage msg) {
+        return this.serialize(this.toSingleEmailMessage(msg));
+    }
+    
+    
+    
+    public String serialize(Messaging.SingleEmailMessage sfdc) {
+       
+        String fooby = JSON.serialize(sfdc, True);
+        Map<String,Object> obj = (Map<String,Object>)JSON.deserializeUntyped(fooby);
+        // obj.remove('debug');
+        for(String key : obj.keySet()) {
+            System.debug(key + ': '+obj.get(key));
+        }
+        
+        return JSON.serialize(obj, True);
+    }
     
     
 

@@ -1,7 +1,7 @@
 @isTest
 public class MailMessageFormatterTest {
 
-    
+      
     
 	private static Account a;
     
@@ -33,6 +33,16 @@ public class MailMessageFormatterTest {
         } catch(Exception e) {
             System.debug('ERROR TESTED.');
         }
+        
+        try {
+        	MailMergeException ex = new MailMergeException('ERROR');
+            ex = new MailMergeException(new MailMessage());
+            // ex.setMessage('FOOBY');
+            ex.getMessage();
+            
+        } catch(Exception e) {
+            System.debug('ERROR TESTED.');
+        }
     }
     
     
@@ -41,9 +51,9 @@ public class MailMessageFormatterTest {
         
         MailMessageFormatterTest tester = new MailMessageFormatterTest();
         
-        // MailClientTest test = new MailClientTest();
+        MailClientTest test = new MailClientTest();
         
-        DefaultMailClientSettings config = new DefaultMailClientSettings();
+        MailClientSettings config = new MailClientSettings();
         
         String letterhead = (String)config.get('letterhead');
         

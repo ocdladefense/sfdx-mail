@@ -5,4 +5,6 @@ global class MailApiConfig {
     webservice String generator;
     
     webservice Boolean sample = False;
+    
+    webservice String afterSend;
 }

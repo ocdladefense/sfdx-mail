@@ -5,7 +5,7 @@ public class MailMessageTemplate {
     
     private String subject;
     
-    
+     
     public MailMessageTemplate(String body) {
        this(body,null); 
     }
@@ -16,11 +16,29 @@ public class MailMessageTemplate {
     }
     
     public String mergeSubject(MailMessage mail) {
-        return null == mail.getWhoId() ? mail.getSubject() : MailMessageFormatter.doMerge(this.getSubject(),mail.getWhoId(),mail.getWhatId());
+        String result;
+          
+
+        	result = null == mail.getWhoId() ? mail.getSubject() : MailMessageFormatter.doMerge(this.getSubject(),mail.getWhoId(),mail.getWhatId());
+  
+        
+        return result;
     }
     
     public String mergeBody(MailMessage mail) {
-        return null == mail.getWhoId() ? mail.getBody() : '<div style="font-size:12pt;">'+MailMessageFormatter.doMerge(this.getBody(),mail.getWhoId(),mail.getWhatId())+'</div>';
+        String result;
+        
+        try {
+            result = null == mail.getWhoId() ? mail.getBody() : '<div style="font-size:12pt;">'+MailMessageFormatter.doMerge(this.getBody(),mail.getWhoId(),mail.getWhatId())+'</div>';
+        } catch(System.EmailTemplateRenderException e) {
+            MailMergeException ex = new MailMergeException(e);
+            ex.setMessage(this.getSubject() + ', WhoId: ' + mail.getWhoId() + ', WhatId: '+ mail.getWhatId());
+            
+            System.debug(ex.getMessage());
+            throw ex;
+        }
+        
+        return result;
     }
     
     /**
@@ -29,11 +47,11 @@ public class MailMessageTemplate {
      */
     public static MailMessageTemplate fromSObject(String name) {
         
-        MailTemplate__c tpl = [SELECT Id, Subject__c, HtmlBody__c  FROM MailTemplate__c
+        MessageTemplate__c emailTemplate = [SELECT Id, Subject__c, HtmlBody__c  FROM MessageTemplate__c
             WHERE Name = :name LIMIT 1];
         
-        String subject = tpl.Subject__c;
-        String body = tpl.HtmlBody__c;
+        String subject = emailTemplate.Subject__c;
+        String body = emailTemplate.HtmlBody__c;
         
         return new MailMessageTemplate(subject,body);
     }
