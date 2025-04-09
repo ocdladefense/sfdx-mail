@@ -1,4 +1,4 @@
-public class ContactEmail extends MailGenerator {
+public without sharing class ContactEmail extends MailGenerator {
 
     
 

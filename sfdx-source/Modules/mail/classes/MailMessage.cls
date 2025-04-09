@@ -13,6 +13,8 @@ public class MailMessage {
     
     private Boolean sampled = False;
     
+    private List<Messaging.EmailFileAttachment> attachments;
+    
     // When True, indicates that the message should not be sent, either using
     // a targetObjectId or a To: addressed to a real customer,
     // but instead should be overridden typically with the email of the given user.
@@ -52,9 +54,18 @@ public class MailMessage {
         this.whatId = whatId;
     }
     
+    public Boolean hasFileAttachments() {
+        return null != this.attachments && this.attachments.size() > 0;
+    }
     
+    public List<Messaging.EmailFileAttachment> getFileAttachments() {
+        return this.attachments;
+    }
+    
+    public void setFileAttachments(List<Messaging.EmailFileAttachment> attachments) {
+        this.attachments = attachments;
+    }	
 
-    
     
     // Important when creating mock records that will be rolled back.
     // This is used by the MailClient to make sure whoId/whatId are not attached to the mail message,

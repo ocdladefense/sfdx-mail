@@ -66,7 +66,7 @@ public class ContactEmailTest {
         	preview.template = 'Generic Template';
         	
 			// Should we test the return values of the above method calls?
-            OcdlaMail.previewEmails(new List<Id>{context.c.Id}, preview);
+            MailApi.previewEmails(new List<Id>{context.c.Id}, preview);
 
         
         Test.stopTest();  
@@ -88,7 +88,7 @@ public class ContactEmailTest {
 			testConfig.generator = 'ContactEmail';
         	testConfig.template = 'Generic Template';  
         
-            OcdlaMail.testEmails(new List<Id>{context.c.Id}, testConfig);
+            MailApi.testEmails(new List<Id>{context.c.Id}, testConfig);
 
         Test.stopTest();  
     }
@@ -125,10 +125,10 @@ msg.htmlBody = '<h1>Hello</h1>';
         	config.template = 'Generic Template';
         	config.afterSend = 'MembershipRenewalMailAction';
         
-        	OcdlaMail.sendEmails(new List<Id>{context.c.Id}, config);
+        	MailApi.sendEmails(new List<Id>{context.c.Id}, config);
         
         	config.afterSend = 'ExpertWitnessMailAction';
-        	OcdlaMail.sendEmails(new List<Id>{context.c.Id}, config);
+        	MailApi.sendEmails(new List<Id>{context.c.Id}, config);
         
         Test.stopTest();
     }

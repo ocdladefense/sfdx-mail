@@ -12,7 +12,8 @@ Mail client and related classes for sending email using the Salesforce Platform.
 sf package create --name Mail --package-type Unlocked --path sfdx-source/Modules/mail
 
 ### Create a version of a package
-sf package version create -c --package "Mail" --installation-key-bypass
+sf package version create -c --package "Mail" --code-coverage --installation-key-bypass --wait 30
+```
 
 ### Release a package version
 sf package version promote -c --package "Mail"

@@ -15,7 +15,4 @@ public class DefaultMailClientSettings extends MailClientSettings {
     }
 
 
-    public override String getLetterhead() {
-        return 'OcdlaEmailLetterhead';
-    }
 }

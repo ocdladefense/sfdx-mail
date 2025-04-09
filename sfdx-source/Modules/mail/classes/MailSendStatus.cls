@@ -5,6 +5,10 @@ global class MailSendStatus {
     webservice DateTime dateSent;
     
     webservice String message;
+
+    webservice String body;
+
+    webservice String subject;
     
     webservice Id targetObjectId {get; set;}
     
@@ -12,31 +16,40 @@ global class MailSendStatus {
     
     
     
-    public MailSendStatus(){}
+    public MailSendStatus(){
+        // Constructor
+    }
     
     
     
     public static List<MailSendStatus> fromSendEmailResults(List<Messaging.SingleEmailMessage> messages, List<Messaging.SendEmailResult> results) {
         List<MailSendStatus> statuses = new List<MailSendStatus>();
         
+        // The index of results should match the index of messages.
         Integer index = 0;
+        
         for(Messaging.SendEmailResult result :results){
             MailSendStatus theStatus = new MailSendStatus();
+
+            // Any errors associated with the Salesforce send operation for this message.
             List<Messaging.SendEmailError> theErrors;
-            
+        
+            theStatus.targetObjectId = messages[index].getTargetObjectId();
+            theStatus.whatId = messages[index].getWhatId();   
+            theStatus.body = messages[index].getHtmlBody();
+            theStatus.subject = messages[index].getSubject();
+            theStatus.dateSent = System.now();
+
             if(!result.isSuccess()){
                	theErrors = result.getErrors();
-                
                 theStatus.isSuccess = False;
-                theStatus.targetObjectId = theErrors[0].getTargetObjectId();
                 theStatus.message = theErrors[0].getStatusCode() + ': '+theErrors[0].getMessage();
-
             } else {
                 theStatus.isSuccess = True;
-                theStatus.targetObjectId = messages[index].getTargetObjectId();
+                theStatus.message = 'Email sent successfully.';
             }
 
-            theStatus.whatId = messages[index].getWhatId();            
+         
             statuses.add(theStatus);
             index++;
         }

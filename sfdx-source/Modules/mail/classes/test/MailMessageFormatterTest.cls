@@ -36,6 +36,7 @@ public class MailMessageFormatterTest {
         
         try {
         	MailMergeException ex = new MailMergeException('ERROR');
+            MailMessageFormatterException ex2 = new MailMessageFormatterException('ERROR');
             ex = new MailMergeException(new MailMessage());
             // ex.setMessage('FOOBY');
             ex.getMessage();

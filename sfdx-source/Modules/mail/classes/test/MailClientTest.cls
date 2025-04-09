@@ -184,7 +184,7 @@ public class MailClientTest {
         try {
             throw new MailClientException('Testing mail client exception.');
         } catch(Exception e) {
-            
+            e.getMessage();
         }
     }
 

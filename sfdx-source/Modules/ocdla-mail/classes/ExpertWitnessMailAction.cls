@@ -2,21 +2,20 @@ public class ExpertWitnessMailAction implements IMailEventAction {
     
     public void afterSend(List<MailSendStatus> results) {
         
-		List<Contact> affectedContacts = new List<Contact>();
+		List<MailMessage__c> messages = new List<MailMessage__c>();
          
         for(MailSendStatus status :results) {
-            Contact c = new Contact(Id=status.targetObjectId);
-            if(status.isSuccess) {
-                c.ExpertWitnessUpdateEmailSent__c = True;
-                c.ExpertWitnessUpdateDateSent__c = System.now();
-            }
-            else {
-               c.MailStatus__c = status.message;
-            }
+
+            MailMessage__c m = new MailMessage__c(Contact__c=status.targetObjectId, 
+                                                  Subject__c=status.subject,
+                                                  Body__c=status.body,
+                                                  DateSent__c=status.dateSent,
+                                                  Status__c=status.message);
+                                                  m.Name = status.subject + ' - ' + status.dateSent.format();
             
-            affectedContacts.add(c);
+            messages.add(m);
         }  
         
-        update affectedContacts;
+        insert messages;
     }
 }

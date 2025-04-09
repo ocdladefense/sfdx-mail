@@ -166,7 +166,7 @@ public class MailClient {
         String senderDisplayName = (String)config.get('senderDisplayName');
         String senderDomain = (String)config.get('senderDomain');
         String ccAddress = (String)config.get('ccAddress');
-        Id orgWideEmailAddressId = (Id)config.get('orgWideEmailAddressId');
+        Id orgWideEmailAddressId = null != config.get('orgWideEmailAddressId') ? (Id)config.get('orgWideEmailAddressId') : null;
         
     
         Messaging.SingleEmailMessage sforce = new Messaging.SingleEmailMessage();
@@ -187,7 +187,15 @@ public class MailClient {
         sforce.setInReplyTo(rand);
         sforce.setCcAddresses(new List<String>{ccAddress});
         sforce.setSenderDisplayName(null);
-        sforce.setOrgWideEmailAddressId(orgWideEmailAddressId);
+        
+        if(msg.hasFileAttachments()) {
+            sforce.setFileAttachments(msg.getFileAttachments());
+        }
+        
+        
+        if(null != orgWideEmailAddressId) {
+            sforce.setOrgWideEmailAddressId(orgWideEmailAddressId);
+        }
         
         // For sampled records, avoid INVALID_CROSS_REFERENCE_ID exceptions.
         if(null != msg.getWhoId() && !msg.isSampled()) {
