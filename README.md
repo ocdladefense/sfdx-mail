@@ -9,12 +9,12 @@ Mail client and related classes for sending email using the Salesforce Platform.
 
 ## Releated SFDX commands
 ### Create a package
-sf package create --name Mail --package-type Unlocked --path sfdx-source/Modules/mail
+sf package create --name LibMail --package-type Unlocked --path sfdx-source/Modules/mail
 
 ### Create a version of a package
-sf package version create -c --package "Mail" --code-coverage --installation-key-bypass --wait 30
+sf package version create --package "LibMail" --code-coverage --installation-key-bypass --wait 30 --dev-hub DevHub__Ocdla
 ```
 
 ### Release a package version
-sf package version promote -c --package "Mail"
+sf package version promote --package "LibMail@0.2.0-1" --target-dev-hub DevHub__Ocdla
 
