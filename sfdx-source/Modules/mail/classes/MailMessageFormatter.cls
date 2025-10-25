@@ -30,7 +30,7 @@ public class MailMessageFormatter {
 		List<Messaging.RenderEmailTemplateBodyResult> merges = new List<Messaging.RenderEmailTemplateBodyResult>();
    
         if(null == whoId) {
-            throw new MailMessageFormatterException('INVALID_CROSS_REFERENCE_ERROR: WhoId cannot be null.');            
+            throw new MailMessageFormatterException('MISSING_REQUIRED_PARAMETER: WhoId cannot be null.');            
         }
         
         part = part.unescapeHtml4();

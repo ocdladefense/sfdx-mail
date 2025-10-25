@@ -1,18 +1,15 @@
-public class MailClient {
+public class MailClient extends MailClientBase {
 
-  	
+    	
     private MailMessage[] outbox = new MailMessage[]{};
     
         
     private Map<String,MailMessage[]> mboxes = new Map<String,MailMessage[]>{'outbox' => outbox};
-        
-        
-	private MailClientSettings config;
-    
-        
  
+   
   
     public MailClient() {
+        super();
         this.config = new MailClientSettings();
     }
 
@@ -41,66 +38,19 @@ public class MailClient {
     
 
 
-    public String doEmailPreview(){
-        String previewAll = '';
-        
-        for(MailMessage m :this.outbox){
-            previewAll += '';//m.mergeBody();
-        }
-        
-        return previewAll;
-    }
-
- 
-    
-    public MailMessage compose() {
-     	return new MailMessage();
-    }
-    
-    
-    public MailMessage compose(String to) {
-        
-        MailMessage mail = new MailMessage();
-        mail.setTo(to);
-        
-        return mail;
-    }
-    
-    
-    public String useLetterhead(String content) {
-        String letterhead = (String)config.get('letterhead');
-        return null != letterhead ? letterhead.replace('{{content}}', content) : content; 
-    }
- 
-
-
- 
-    public List<MailSendStatus> send(MailMessage msg) {
-        
-        List<MailMessage> msgs = new List<MailMessage>();
-        
-        msgs.add(msg);
-        
-        return send(new MailMessageIterator(msgs));
-    }
-
-    
-
-    
-
-    public List<MailSendStatus> send(MailGenerator custom) {
+    public override List<MailSendStatus> send(MailGenerator custom) {
         
         MailMessageIterator queue = custom.iterator();
         return send(queue);
     }
         
-    public List<MailSendStatus> send(MailMessageIterator messages) {
+    public override List<MailSendStatus> send(MailMessageIterator messages) {
 	    List<Messaging.SingleEmailMessage> out = new List<Messaging.SingleEmailMessage>();
             
 
-        
-        System.debug('Queue size is: ' +messages.size());
-        
+        if(null == messages || messages.size() == 0) {
+        	throw new MailClientException('NO_MAIL_MESSAGES: There are no messages in the queue.');
+        }
         
         while(messages.hasNext()) {
             MailMessage msg = messages.next();
@@ -111,22 +61,23 @@ public class MailClient {
             out.add(sforce);  
 		}
         
-        System.debug('SingleEmailMessage[] size is: ' +out.size());
+
             
 		Messaging.SendEmailResult[] results = send(out);
-        System.debug('Salesforce size is: '+results[0]);
-        if(null == results || results.size() < 1) {
-            throw new MailClientException('Empty!');
-        }
+
         
-        return MailSendStatus.fromSendEmailResults(out,results);
+        List<MailSendStatus> statuses = MailSendStatus.fromSendEmailResults(out,results);
+        this.afterSend(statuses);
+        return statuses;
     }
 
     
-    public List<MailSendStatus> send(List<MailMessage> messages) {
+    public override List<MailSendStatus> send(List<MailMessage> messages) {
 	    List<Messaging.SingleEmailMessage> out = new List<Messaging.SingleEmailMessage>();
             
-        System.debug('Queue size is: ' +messages.size());
+        if(null == messages || messages.size() == 0) {
+        	throw new MailClientException('NO_MAIL_MESSAGES: There are no messages in the queue.');
+        }
         
         
         for(MailMessage msg : messages) {
@@ -137,31 +88,47 @@ public class MailClient {
               
             out.add(sforce);  
 		}
-        
-        System.debug('SingleEmailMessage[] size is: ' +out.size());
+
             
 		Messaging.SendEmailResult[] results = send(out);
-        System.debug('Salesforce size is: '+results[0]);
-        if(null == results || results.size() < 1) {
-            throw new MailClientException('Empty!');
-        }
+
         
-        return MailSendStatus.fromSendEmailResults(out,results);
+        List<MailSendStatus> statuses = MailSendStatus.fromSendEmailResults(out,results);
+        this.afterSend(statuses);
+        return statuses;
     }
 
     
     
+    public override void afterSend(List<MailSendStatus> results) {
+        
+		List<MailMessage__c> messages = new List<MailMessage__c>();
+         
+        for(MailSendStatus status :results) {
+            Id contactId = status.targetObjectId;
+            
+            if(null == contactId) continue;
+            
+            //try {
+                MailMessage__c m = new MailMessage__c(Contact__c=status.targetObjectId, 
+                                                      Subject__c=status.subject,
+                                                      Body__c=status.body,
+                                                      DateSent__c=status.dateSent,
+                                                      Status__c=status.message);
+                                                      m.Name = status.subject + ' - ' + status.dateSent.format();
+                
+                messages.add(m);
+            //} catch(System.DmlException e) {
+            //    continue;
+            //}
+        }  
+        
+        insert messages;
+    }    
 
-    
-    public Messaging.SendEmailResult[] send(List<Messaging.SingleEmailMessage> theMessages){
-        return Messaging.sendEmail(theMessages, (Boolean)config.get('allOrNothing'));
-    }
- 
-		
-    
 
 
-    public Messaging.SingleEmailMessage toSingleEmailMessage(MailMessage msg) {
+    public override Messaging.SingleEmailMessage toSingleEmailMessage(MailMessage msg) {
         
         String senderDisplayName = (String)config.get('senderDisplayName');
         String senderDomain = (String)config.get('senderDomain');
@@ -249,7 +216,7 @@ public class MailClient {
         
         return msg;
     }
-    
+      
 
     
     public List<MailMessage> getMailbox(String key) {
@@ -259,24 +226,6 @@ public class MailClient {
 
         
 
-    public String serialize(MailMessage msg) {
-        return this.serialize(this.toSingleEmailMessage(msg));
-    }
-    
-    
-    
-    public String serialize(Messaging.SingleEmailMessage sfdc) {
-       
-        String fooby = JSON.serialize(sfdc, True);
-        Map<String,Object> obj = (Map<String,Object>)JSON.deserializeUntyped(fooby);
-        // obj.remove('debug');
-        for(String key : obj.keySet()) {
-            System.debug(key + ': '+obj.get(key));
-        }
-        
-        return JSON.serialize(obj, True);
-    }
-    
     
 
     

@@ -46,6 +46,9 @@ public class ContactEmailTest {
     static void testGetData() {
         
         ContactEmail generator = new ContactEmail();
+        MailMessageIterator it = generator.iterator();
+
+        it.split(1);
     }
         
       

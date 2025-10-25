@@ -7,7 +7,7 @@ public abstract class MailGenerator implements Iterable<MailMessage> {
 	protected String tplName = null;
 
     
-    
+    public MailGenerator() {}
 
     
     public virtual void setTemplate(String name) {
@@ -24,9 +24,7 @@ public abstract class MailGenerator implements Iterable<MailMessage> {
     
 	public abstract MessageWhoIdWhatId getSampleWhoIdWhatId(List<Id> recordIds);
     
-    public virtual void afterSend(List<MailSendStatus> results) {
-        
-    } 
+    public virtual void afterSend(List<MailSendStatus> results) {} 
     
     
     /**
@@ -37,6 +35,6 @@ public abstract class MailGenerator implements Iterable<MailMessage> {
     public virtual MailMessageIterator iterator() {
         
         MailMessageTemplate tpl = null == this.tplName ? null : MailMessageTemplate.fromSObject(this.tplName);
-        return null == tpl ? new MailMessageIterator(getMessages()) : new MailMessageIterator(getMessages(), tpl);
+        return new MailMessageIterator(getMessages(), tpl);
     }
 }

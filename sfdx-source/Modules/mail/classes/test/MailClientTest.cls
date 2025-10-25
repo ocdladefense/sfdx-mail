@@ -18,9 +18,50 @@ public class MailClientTest {
     }
     
     
+    
+    @isTest
+    static void testMailClientTestingAsync() {
+        
+        
+        Test.startTest();
+        
+        MailClientTesting client = new MailClientTesting();
+        
+        Mailbox generator = new Mailbox();
+        generator.addMessage(new MailMessage('john.doe@example.com', 'Test Mail', 'This is a test message'));
+        
+        List<Id> jobIds = client.sendAsync(generator);
+        
+        Test.stopTest();
+    }
+    
+    
+    @isTest
+    static void testMailClientTesting() {
+        
+        
+        Test.startTest();
+        
+        MailClientTesting client = new MailClientTesting();
+        
+        Mailbox generator = new Mailbox();
+        generator.addMessage(new MailMessage('john.doe@example.com', 'Test Mail', 'This is a test message'));
+        
+        // Expand test coverage of Mailbox.class
+        generator.getSampleWhoIdWhatId(new List<Id>());
+        
+        List<MailSendStatus> jobIds = client.send(generator);
+        
+        Test.stopTest();
+    }
+    
+    
+  
+    
+    
 	@isTest
     static void testClient() {
-        
+          
         MailClientTest test = new MailClientTest();
         
 		MailClient client = new MailClient();

@@ -26,8 +26,18 @@ public class MailMessageTemplate {
     }
     
     public String mergeBody(MailMessage mail) {
-        String result;
+        String mergedBody;
+
         
+        if(null == mail.getWhoId() && null == mail.getWhatId()) { // No merge needed.
+            return mail.getBody();
+        }
+        
+        mergedBody = MailMessageFormatter.doMerge(this.getBody(), mail.getWhoId(), mail.getWhatId());
+        
+            
+        return '<div style="font-size:12pt;">'+ mergedBody +'</div>';        
+        /*
         try {
             result = null == mail.getWhoId() ? mail.getBody() : '<div style="font-size:12pt;">'+MailMessageFormatter.doMerge(this.getBody(),mail.getWhoId(),mail.getWhatId())+'</div>';
         } catch(System.EmailTemplateRenderException e) {
@@ -37,8 +47,7 @@ public class MailMessageTemplate {
             System.debug(ex.getMessage());
             throw ex;
         }
-        
-        return result;
+		*/
     }
     
     /**

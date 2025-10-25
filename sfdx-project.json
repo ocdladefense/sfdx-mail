@@ -5,8 +5,8 @@
     {
       "path": "sfdx-source/Modules/mail",
       "package": "LibMail",
-      "versionName": "Spring '25",
-      "versionNumber": "0.2.0.NEXT",
+      "versionName": "Fall '25",
+      "versionNumber": "0.6.1.NEXT",
       "default": false,
       "versionDescription": ""
     },
@@ -34,6 +34,11 @@
     "LibMail": "0HoVJ00000000010AA",
     "ClickpdxCore@1.33": "04t1I000002yBe4",
     "LibMail@0.1.0-1": "04tVJ0000001PArYAM",
-    "LibMail@0.2.0-1": "04tVJ000000CF4vYAG"
+    "LibMail@0.2.0-1": "04tVJ000000CF4vYAG",
+    "LibMail@0.3.0-1": "04tVJ000000HOAnYAO",
+    "LibMail@0.4.0-1": "04tVJ000000HQcPYAW",
+    "LibMail@0.5.0-1": "04tVJ000000HQkTYAW",
+    "LibMail@0.6.0-1": "04tVJ000000HSHdYAO",
+    "LibMail@0.6.1-1": "04tVJ000000HYuvYAG"
   }
 }
