@@ -4,6 +4,7 @@ public class MailMessageFormatter {
     
 	final static String HTML_REGEX = '(?mis)<.*?>';
 
+    final static Boolean USE_FILTERS = False;
 
     
     public MailMessageFormatter() {}
@@ -39,7 +40,7 @@ public class MailMessageFormatter {
         	part = TextPlainToTextHtmlFilter.filter(part);
         }
         
-        if(hasHtml(part)) {
+        if(MailMessageFormatter.USE_FILTERS && hasHtml(part)) {
         	part = HtmlTidyFilter.filter(part);
         }
         

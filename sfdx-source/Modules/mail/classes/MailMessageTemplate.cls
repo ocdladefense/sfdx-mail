@@ -4,7 +4,7 @@ public class MailMessageTemplate {
     
     
     private String subject;
-    
+      
      
     public MailMessageTemplate(String body) {
        this(body,null); 

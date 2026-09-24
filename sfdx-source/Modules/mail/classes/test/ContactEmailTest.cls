@@ -7,7 +7,7 @@ public class ContactEmailTest {
     
     public Contact c;
     
-   	public SObject tpl;
+   	public MessageTemplate__c tpl;
     
 
     public ContactEmailTest() {
@@ -20,8 +20,9 @@ public class ContactEmailTest {
         insert c;
         
          
-        tpl = new MessageTemplate__c(Name='Generic Template',Subject__c = 'TEST TEMPLATE EMAIL', HtmlBody__c = 'Hello, {!Contact.Foobar__c}');
+        tpl = new MessageTemplate__c(Subject__c = 'TEST TEMPLATE EMAIL', HtmlBody__c = 'Hello, {!Contact.Foobar__c}');
         insert tpl;
+        tpl = [SELECT Id, Name, Subject__c, HtmlBody__c, Label__c FROM MessageTemplate__c WHERE Id = :tpl.Id LIMIT 1];
     }
         
      
@@ -31,7 +32,7 @@ public class ContactEmailTest {
     static void testWhoIdWhatId() {
         
         ContactEmailTest context = new ContactEmailTest();
-        
+
         Id whoId = context.c.Id;
         Id whatId = null;
         
@@ -45,7 +46,10 @@ public class ContactEmailTest {
     @isTest
     static void testGetData() {
         
+        ContactEmailTest context = new ContactEmailTest();
+        
         ContactEmail generator = new ContactEmail();
+        generator.setTemplate(context.tpl.Name);
         MailMessageIterator it = generator.iterator();
 
         it.split(1);
@@ -60,13 +64,13 @@ public class ContactEmailTest {
         
         	ContactEmailTest context = new ContactEmailTest(); 
         	ContactEmail generator = new ContactEmail(context.c.Id);
-        	generator.getMessages();
+        	// generator.getMessages();
         
         	MailApiConfig preview = new MailApiConfig();
         
         	preview.sample = True;  
 			preview.generator = 'ContactEmail';
-        	preview.template = 'Generic Template';
+        	preview.template = context.tpl.Name;
         	
 			// Should we test the return values of the above method calls?
             MailApi.previewEmails(new List<Id>{context.c.Id}, preview);
@@ -89,7 +93,7 @@ public class ContactEmailTest {
         
         	testConfig.sample = False;
 			testConfig.generator = 'ContactEmail';
-        	testConfig.template = 'Generic Template';  
+        	testConfig.template = context.tpl.Name;  
         
             MailApi.testEmails(new List<Id>{context.c.Id}, testConfig);
 
@@ -125,7 +129,7 @@ msg.htmlBody = '<h1>Hello</h1>';
         
         	config.sample = False;  
 			config.generator = 'ContactEmail';
-        	config.template = 'Generic Template';
+        	config.template = context.tpl.Name;
         	config.afterSend = 'MembershipRenewalMailAction';
         
         	MailApi.sendEmails(new List<Id>{context.c.Id}, config);

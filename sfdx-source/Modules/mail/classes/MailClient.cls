@@ -115,7 +115,8 @@ public class MailClient extends MailClientBase {
                                                       Body__c=status.body,
                                                       DateSent__c=status.dateSent,
                                                       Status__c=status.message);
-                                                      m.Name = status.subject + ' - ' + status.dateSent.format();
+                String Name = status.subject + ' - ' + status.dateSent.format();
+                m.Name = Name.substring(0, Math.min(Name.length(), 80));
                 
                 messages.add(m);
             //} catch(System.DmlException e) {

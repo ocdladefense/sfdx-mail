@@ -106,10 +106,11 @@ public without sharing class MailClientTesting extends MailClientBase {
         System.debug('SingleEmailMessage[] size is: ' +out.size());
             
 		Messaging.SendEmailResult[] results = send(out);
-        System.debug('Salesforce size is: '+results[0]);
+
         if(null == results || results.size() < 1) {
             throw new MailClientException('Empty!');
         }
+        System.debug('Salesforce size is: '+results[0]);
         
         MailSendStatus[] theResults = MailSendStatus.fromSendEmailResults(out,results);
 

@@ -156,8 +156,10 @@
     <externalSharingModel>Private</externalSharingModel>
     <label>Message Template</label>
     <nameField>
-        <label>Template Name</label>
-        <type>Text</type>
+        <label>Name</label>
+        <type>AutoNumber</type>
+        <displayFormat>TPL-{0000}</displayFormat>
+        <startingNumber>39</startingNumber>
     </nameField>
     <pluralLabel>Message Templates</pluralLabel>
     <searchLayouts>

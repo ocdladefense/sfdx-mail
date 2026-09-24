@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Edit</fullName>
+    <availability>online</availability>
+    <displayType>button</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>Edit</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <url>{!REQUIRESCRIPT(&quot;/soap/ajax/58.0/connection.js&quot;)} 
+{!REQUIRESCRIPT(&quot;/soap/ajax/58.0/apex.js&quot;)} 
+
+var soId = &apos;{!MessageTemplate__c.Id}&apos;;
+if(soId==&apos;&apos;) {
+  alert(&apos;Save your record first!&apos;); 
+}
+else {
+// var agree = confirm(&quot;Edit this?&quot;); 
+
+// Decide what the test url should be, too...
+window.location.href=&apos;/apex/RichTextFieldEditor?id=&apos;+soId+&apos;&amp;fieldName=HtmlBody__c&apos;;
+
+}</url>
+</WebLink>

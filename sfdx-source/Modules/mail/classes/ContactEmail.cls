@@ -9,7 +9,7 @@ public without sharing class ContactEmail extends MailGenerator {
     }
     
     public ContactEmail() {
-        
+        super();
     }  
     
 
@@ -42,13 +42,13 @@ public without sharing class ContactEmail extends MailGenerator {
         // String tplName = 'Membership Renewal Confirmation';
         // tplName = 'AC19 Update';
         
-        // MailMessageTemplate tpl = MailMessageTemplate.fromSObject(tplName);
+        MailMessageTemplate tpl = MailMessageTemplate.fromSObject(tplName);
         
         
         for(Contact c :contacts){
 			MailMessage msg = new MailMessage(c.Id, null);
             msg.setTo(c.Email);
-			// msg.setTemplate(tpl);
+			msg.setTemplate(tpl);
             emails.add(msg);
         }
 
