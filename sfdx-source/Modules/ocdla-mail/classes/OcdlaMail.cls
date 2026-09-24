@@ -88,7 +88,7 @@ global without sharing class OcdlaMail {
     
     webservice static List<MailSendStatus> testEmails(List<Id> recordIds, MailApiConfig config) {
         
-		MailClient client = new MailClient();
+		MailClientTesting client = new MailClientTesting();
         
         List<MailMessage> messages = generateTestEmails(recordIds, config);
         
@@ -101,29 +101,14 @@ global without sharing class OcdlaMail {
      * testEmails
      */
     public static List<MailMessage> generateTestEmails(List<Id> recordIds, MailApiConfig config) {
-        
-        Savepoint sp;
-        MessageWhoIdWhatId sample;
-        List<MailMessage> messages = new List<MailMessage>();
-        String errorMessage;
 
-        Boolean useSample = null == config.sample ? False : config.sample;
+        List<MailMessage> messages = new List<MailMessage>();
+
+
+        // Boolean useSample = null == config.sample ? False : config.sample;
         
         MailGenerator generator = getGenerator(config);
-
-        System.debug(generator);
-
-
-        sp = Database.setSavepoint();
-        
-		MailClient client = new MailClient();
-        
-        if(useSample) {
-            sample = generator.getSampleWhoIdWhatId(recordIds); 
-        }
-        
-        List<Id> whatIds = useSample ? new List<Id>{sample.getWhatId()} : recordIds;   
-        generator.setRecordIds(whatIds);
+        generator.setRecordIds(recordIds);
         
         MailMessageIterator it = generator.iterator();
 
@@ -132,13 +117,10 @@ global without sharing class OcdlaMail {
             if(null == email.getWhoId()) {
                 throw new MailApiException('EMAIL_ERROR: WhoId not set.');
             }
-            email.setSampled(useSample);
             email.setTest(True);
             email.setTo(UserInfo.getUserEmail());
             messages.add(email);
         }
-        
-        Database.rollback(sp);
         
         return messages;
     }

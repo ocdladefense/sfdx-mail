@@ -1,6 +1,6 @@
 @isTest
 private class OcdlaAttendeeTest {
-        
+          
     private static User u;  
       
     private static Profile theProfile;
@@ -59,12 +59,13 @@ private class OcdlaAttendeeTest {
         this.lines = [SELECT Id, OrderId, PricebookEntryId, Description, UnitPrice, TotalPrice, Quantity, Contact__c,
                       FirstName__c, LastName__c FROM OrderItem WHERE OrderId = :this.o.Id];
         
-        MessageTemplate__c template = new MessageTemplate__c(Name='OCDLA Email Letterhead',Subject__c='Action Required',HtmlBody__c='{{content}}');
+        MessageTemplate__c template = new MessageTemplate__c(Event__c=this.e.Id, IsActive__c=True,Label__c='Event Confirmation',Subject__c='Action Required',HtmlBody__c='{{content}}');
+        template.Event__c = this.e.Id;
         insert template;
         
         this.letterhead = template;
     }
-    
+      
     
     @testSetup static void setup() {
         testSetup();
@@ -121,12 +122,13 @@ private class OcdlaAttendeeTest {
     private static void testEmails() { 
         
         OcdlaAttendeeTest context = new OcdlaAttendeeTest();
+        
+        
         OrderItem line = context.lines[0].clone(False,True);
         line.Contact__c = context.c.Id;
         line.PricebookEntryId = context.entry.Id;
-        insert line;
-        
-        MailClient client = new MailClient();
+        upsert line;  
+       
         
         Test.startTest();  
         
@@ -134,12 +136,8 @@ private class OcdlaAttendeeTest {
         	defaultConfig.generator = 'AttendeeConfirmationEmail';
         
             OcdlaMail.testEmails(new List<Id>{line.Id}, defaultConfig);  
-			List<MailMessage> messages = OcdlaMail.generateTestEmails(new List<Id>{line.Id}, defaultConfig);
-        	
-            for(MailMessage m : messages) {
-                Messaging.SingleEmailMessage msg = client.toSingleEmailMessage(m);
-                client.serialize(m);
-            }
+
+          
 		Test.stopTest();
     }
     

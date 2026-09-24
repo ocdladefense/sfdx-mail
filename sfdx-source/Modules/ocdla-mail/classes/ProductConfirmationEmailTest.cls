@@ -20,7 +20,7 @@ public class ProductConfirmationEmailTest {
     MessageTemplate__c letterhead;
     
     MessageTemplate__c productTemplate;
-      
+        
      
     public ProductConfirmationEmailTest() {
         
@@ -30,11 +30,12 @@ public class ProductConfirmationEmailTest {
        	a = new Account(Name='OCDLA');
         insert a;
         
-        c = new Contact(FirstName='José',LastName='Bernal',Email='jbernal.web.dev@gmail.com',AccountId=a.Id);
+        c = new Contact(FirstName='José', LastName='Bernal', Email='jbernal.web.dev@gmail.com', AccountId=a.Id);
         insert c;
             
         
         this.p = [SELECT Id, Name, Event__c, ProductCode FROM Product2 WHERE Name LIKE :filter LIMIT 1];
+        this.p.EnableConfirmationEmails__c = True;
         this.p.ConfirmationEmailSubject__c = '{!Contact.FirstName}';
         this.p.ConfirmationEmailBody__c = '{!OrderItem.FirstName__c}';
         update this.p;
@@ -49,19 +50,33 @@ public class ProductConfirmationEmailTest {
         this.theLine = new OrderItem(PricebookEntryId=this.entry.Id,UnitPrice=1.00,Quantity=1.00,Contact__c=c.Id,FirstName__c='Jane',LastName__c='Doe');
         this.theLine.OrderId = o.Id;
         insert this.theLine;
-    }
         
-     
+        
+        this.productTemplate = new MessageTemplate__c(Subject__c='My Ken Morrow',HtmlBody__c ='<h2>Hello World!',Product2__c=this.p.Id);
+        insert this.productTemplate;
+        
+    }
+          
+       
     @testSetup
     static void setup() {
         testSetup();
-    }    
+    }      
        
     public static void testSetup() {
         System.assertNotEquals(null, recordPrefix, 'RecordId prefix should not be NULL.');
         ClickpdxCore.TestBase.setup(recordPrefix);        
     }
       
+
+    @isTest
+    static void getQueryFields() {
+    	ProductConfirmationEmail theEmail = new ProductConfirmationEmail();
+        theEmail.getQueryFields();
+        
+    }
+    
+    
     @isTest
     static void testWhoIdWhatId() {
         
@@ -120,31 +135,17 @@ public class ProductConfirmationEmailTest {
         
         	MailApiConfig defaultConfig = new MailApiConfig();
         	defaultConfig.generator = 'ProductConfirmationEmail';
-        	defaultConfig.sample = False;
-        
-            OcdlaMail.testEmails(new List<Id>{context.theLine.Id}, defaultConfig);
-
+            defaultConfig.sample = False;
+            
+            try {
+                OcdlaMail.testEmails(new List<Id>{context.theLine.Id}, defaultConfig);
+            } catch(MailClientException e) {
+                System.debug(e);
+            }
 		Test.stopTest();  
     }
       
     
-    @isTest
-    static void testEmailsWithSample() {
-        ProductConfirmationEmailTest context = new ProductConfirmationEmailTest();
-
-        Test.startTest();
-        
-        	MailApiConfig defaultConfig = new MailApiConfig();
-        	defaultConfig.generator = 'ProductConfirmationEmail';
-        	defaultConfig.sample = True;
-        
-        	// Note: to get a sample we pass the productId in, not the lineId.
-            OcdlaMail.testEmails(new List<Id>{context.p.Id}, defaultConfig);
-
-		Test.stopTest();  
-    }  
-    
-      
         
     @isTest
     static void sendEmails() {

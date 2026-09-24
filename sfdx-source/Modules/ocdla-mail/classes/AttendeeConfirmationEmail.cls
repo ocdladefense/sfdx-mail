@@ -1,6 +1,20 @@
 public class AttendeeConfirmationEmail extends MailGenerator {
 
     
+    // Id of the Event from which to draw records.
+    private Id eventId;
+    
+    
+      
+    public AttendeeConfirmationEmail(Id eventId) {
+        super();
+        this.eventId = eventId;
+    }
+    
+    
+    public AttendeeConfirmationEmail() {
+        super();
+    }
       
       
     public override MessageWhoIdWhatId getSampleWhoIdWhatId(List<Id> recordIds) {
@@ -38,12 +52,12 @@ public class AttendeeConfirmationEmail extends MailGenerator {
     public override List<MailMessage> getMessages(){
  
         List<OrderItem> lines;
-
+		// Id AC_2026_EVENT_ID = 'a23VJ000007SEjx';
+        String AC_2026_TEMPLATE_NAME = 'Confirmation Email';
         
         lines = [SELECT Id, Order.BillToContact.Email, Email__c, Product2Id, PricebookEntryId, Contact__c, Contact__r.FirstName,
-                 Contact__r.LastName, Contact__r.Email,
-                 Product2.Event__r.EventConfirmationEmailSubject__c,
-				Product2.Event__r.EventConfirmationEmail__c FROM OrderItem WHERE Id = :this.recordIds];
+                 Contact__r.LastName, Contact__r.Email, Product2.Event__c FROM OrderItem
+                 WHERE Id = :this.recordIds];
 
 		List<MailMessage> emails = new List<MailMessage>();
 
@@ -52,9 +66,10 @@ public class AttendeeConfirmationEmail extends MailGenerator {
             // Each Product potentially has a template.  
             // Abstract the subject/body parts of the template into a template object.
             // This object can be used later.
-            String tpls = line.Product2.Event__r.EventConfirmationEmailSubject__c;
-            String tplb = line.Product2.Event__r.EventConfirmationEmail__c;
-            MailMessageTemplate tpl = new MailMessageTemplate(tpls,tplb);
+            // String tpls = line.Product2.Event__r.EventConfirmationEmailSubject__c; // @jbernal, remove this.
+            // String tplb = line.Product2.Event__r.EventConfirmationEmail__c; // @jbernal, remove this.
+            Id eventId = line.Product2.Event__c;
+            MailMessageTemplate tpl = AttendeeConfirmationEmail.getMailMessageTemplate(eventId);
             
             
         	Id whoId = line.Contact__c;
@@ -75,6 +90,18 @@ public class AttendeeConfirmationEmail extends MailGenerator {
         }
         
         return emails;
+    }
+    
+    
+    
+    public static MailMessageTemplate getMailMessageTemplate(Id eventId) {
+        MessageTemplate__c emailTemplate = [SELECT Id, Subject__c, HtmlBody__c FROM MessageTemplate__c
+            WHERE IsActive__c = True AND Event__c=:eventId AND Type__c = 'Attendee Confirmation' LIMIT 1];
+        
+        String subject = emailTemplate.Subject__c;
+        String body = emailTemplate.HtmlBody__c;
+        
+        return new MailMessageTemplate(subject,body);
     }
     
     
